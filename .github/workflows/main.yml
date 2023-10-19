@@ -1,0 +1,35 @@
+name: Image
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+       - Code-chef
+
+    tags:
+     - v*
+
+env:
+  IMAGE_NAME: ticket_tracker01/ticket
+
+jobs:
+  build-and-push:
+    runs-on: docker
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build image
+        run: docker build --file src/ Dockerfile --tag $IMAGE_NAME --build-arg GITHUB_RUN_ID=$GITHUB_RUN_ID
+
+      - name: Set image tag
+        run: |
+          IMAGE_ID=$IMAGE_NAME
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          [ "$VERSION" == "Code-chef" ] && VERSION=latest
+
+      - name: Push image
+        run: |
+          docker tag $IMAGE_NAME
+          docker push anurag0072/ticket_tracker01:tagname
+          
