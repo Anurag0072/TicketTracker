@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build image
-        run: docker build --file src/ Dockerfile --tag $IMAGE_NAME --build-arg GITHUB_RUN_ID=$GITHUB_RUN_ID
+        run: docker build --file Dockerfile --tag $IMAGE_NAME --build-arg GITHUB_RUN_ID=$GITHUB_RUN_ID
 
       - name: Set image tag
         run: |
